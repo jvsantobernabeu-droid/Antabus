@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#111111">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="ANTABUS">
+<title>ANTABUS</title>
+<style>
+:root{
+  --bg:#f3efe6;--card:#ffffff;--text:#14141a;--muted:#6a6a74;--border:#ddd6c6;
+  --head:#111111;--head-text:#f6f1e6;--red:#e6007e;--red-text:#ffffff;
+  --blue:#1d3f8a;--blue-text:#ffffff;--today:#e8edf9;--warn:#b3202f;
+  box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);
+  color-scheme:light;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#0e0e12;--card:#1a1a21;--text:#f2efe8;--muted:#a09fa8;--border:#2e2e38;
+    --head:#000000;--head-text:#f6f1e6;--red:#ff4fa3;--red-text:#1a0510;
+    --blue:#5b86e8;--blue-text:#0a1330;--today:#1b2438;--warn:#ff7a87;color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0e0e12;--card:#1a1a21;--text:#f2efe8;--muted:#a09fa8;--border:#2e2e38;
+  --head:#000000;--head-text:#f6f1e6;--red:#ff4fa3;--red-text:#1a0510;
+  --blue:#5b86e8;--blue-text:#0a1330;--today:#1b2438;--warn:#ff7a87;color-scheme:dark;
+}
+*{box-sizing:border-box}
+html{height:100%;scroll-padding-top:env(safe-area-inset-top,0px)}
+body{height:100%;margin:0;display:flex;flex-direction:column;background:var(--bg);color:var(--text);font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;-webkit-tap-highlight-color:transparent;overflow:hidden}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);background:var(--head);z-index:10}
+header{flex:none;background:var(--head);color:var(--head-text);text-align:center;padding:10px 12px 9px;border-bottom:4px solid var(--red)}
+header p{margin:6px 0 0;font-size:.78rem;opacity:.8}
+main{flex:1;min-height:0;display:flex;flex-direction:column;width:100%;max-width:520px;margin:0 auto;padding:10px 12px 12px;overflow-y:auto}
+.nav{flex:none;display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:8px}
+.nav button{width:40px;height:40px;border-radius:50%;border:2px solid var(--text);background:var(--card);color:var(--text);font-size:1.2rem;cursor:pointer;padding:0}
+.nav button:disabled{opacity:.3;cursor:default}
+.range{font-weight:700;text-align:center;flex:1;font-size:.95rem}
+.summary{flex:none;background:var(--card);border:2px solid var(--text);border-radius:14px;padding:8px 14px;margin-bottom:8px}
+.summary b{font-size:.98rem}
+.bar{height:9px;background:var(--border);border-radius:99px;margin-top:6px;overflow:hidden}
+.bar i{display:block;height:100%;background:var(--red);border-radius:99px;transition:width .25s}
+#days{flex:1;min-height:0;display:flex;flex-direction:column;gap:6px}
+.day{flex:1 1 0;min-height:46px;max-height:76px;display:flex;align-items:center;gap:12px;width:100%;text-align:left;background:var(--card);color:var(--text);border:1px solid var(--border);border-radius:14px;padding:4px 14px;font:inherit;cursor:pointer}
+.day.today{background:var(--today);border:2px solid var(--blue)}
+.day:disabled{opacity:.45;cursor:default}
+.dn{flex:1;min-width:0}
+.dn strong{display:block;font-size:1rem}
+.dn span{color:var(--muted);font-size:.8rem}
+.dn .miss{color:var(--warn);font-weight:600}
+.chk{width:36px;height:36px;border-radius:50%;border:2px solid var(--border);display:grid;place-items:center;font-size:1.2rem;color:transparent;flex:none}
+.day.done .chk{background:var(--blue);border-color:var(--blue);color:var(--blue-text)}
+#save{flex:none;display:block;width:100%;margin-top:8px;padding:14px;border:0;border-radius:14px;background:var(--red);color:var(--red-text);font:inherit;font-size:1.1rem;font-weight:800;letter-spacing:.04em;text-transform:uppercase;cursor:pointer}
+#save:disabled{background:var(--border);color:var(--muted);cursor:default}
+#msg{flex:none;text-align:center;min-height:1.2em;margin:6px 0 0;font-size:.85rem;font-weight:600;color:var(--muted)}
+#msg.ok{color:var(--blue)}
+.gsq{display:flex;flex-direction:column;align-items:center;gap:5px}
+.gsq .ln{display:flex;flex-wrap:wrap;justify-content:center;gap:10px}
+.gsq .w{display:flex;gap:2px}
+.gsq span{display:inline-block;font-size:1.2rem;line-height:1;padding:.14em .16em .08em;color:#111;background:#fff;box-shadow:2px 2px 0 rgba(0,0,0,.55);font-family:Impact,"Arial Black",sans-serif;font-weight:900}
+.gsq span:nth-child(3n+2){font-family:Georgia,"Times New Roman",serif;font-weight:900}
+.gsq span:nth-child(3n){font-family:"Courier New",monospace;font-weight:900}
+.gsq span:nth-child(5n+1){background:#ff2e93;color:#fff;transform:rotate(-5deg)}
+.gsq span:nth-child(5n+2){background:#ffe600;color:#111;transform:rotate(3deg)}
+.gsq span:nth-child(5n+3){background:#fff;color:#111;transform:rotate(-2deg) translateY(2px)}
+.gsq span:nth-child(5n+4){background:#00e5ff;color:#111;transform:rotate(6deg)}
+.gsq span:nth-child(5n){background:#111;color:#b6ff00;outline:2px solid #b6ff00;transform:rotate(-4deg)}
+.gsq .w:nth-child(2) span:nth-child(odd){transform:rotate(4deg) translateY(-2px)}
+.gsq .ln:nth-child(2) .w:nth-child(2) span:nth-child(even){transform:rotate(-6deg)}
+#splash{position:fixed;inset:0;z-index:20;background:#111;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:34px;padding:env(safe-area-inset-top,0px) 16px env(safe-area-inset-bottom,0px);border:0;width:100%;font:inherit;cursor:pointer;transition:opacity .35s}
+#splash.out{opacity:0;pointer-events:none}
+header .gsq span{font-size:1.6rem}
+#splash .gsq span{font-size:clamp(1.8rem,10vw,3rem)}
+#splash .go{color:#111;background:#ffe600;font-weight:900;font-size:1.05rem;letter-spacing:.08em;padding:14px 22px;border-radius:10px;text-transform:uppercase;box-shadow:3px 4px 0 #ff2e93}
+</style>
+</head>
+<body>
+<button id="splash" aria-label="Entrar">
+  <div class="gsq">
+    <div class="ln"><div class="w"><span>A</span><span>N</span><span>T</span><span>A</span><span>B</span><span>U</span><span>S</span></div></div>
+  </div>
+  <div class="go">Toca para entrar</div>
+</button>
+<header>
+  <div class="gsq" role="img" aria-label="ANTABUS">
+    <div class="ln"><div class="w"><span>A</span><span>N</span><span>T</span><span>A</span><span>B</span><span>U</span><span>S</span></div></div>
+  </div>
+  <p>Mi semana · de lunes a domingo</p>
+</header>
+<main>
+  <div class="nav">
+    <button id="prev" aria-label="Semana anterior">‹</button>
+    <div class="range" id="range"></div>
+    <button id="next" aria-label="Semana siguiente">›</button>
+  </div>
+  <div class="summary"><b id="count"></b><div class="bar"><i id="fill"></i></div></div>
+  <div id="days"></div>
+  <button id="save" disabled>Guardar</button>
+  <p id="msg"></p>
+</main>
+<script>
+(function(){
+  var KEY="medicacion-semanal";
+  var DAYS=["Lunes","Martes","Miércoles","Jueves","Viernes","Sábado","Domingo"];
+  var MONTHS=["enero","febrero","marzo","abril","mayo","junio","julio","agosto","septiembre","octubre","noviembre","diciembre"];
+  var saved={};
+  try{var raw=localStorage.getItem(KEY);if(raw)saved=JSON.parse(raw)||{};}catch(e){saved={};}
+  var draft=JSON.parse(JSON.stringify(saved));
+  function pad(n){return n<10?"0"+n:""+n}
+  function key(d){return d.getFullYear()+"-"+pad(d.getMonth()+1)+"-"+pad(d.getDate())}
+  function startOfDay(d){return new Date(d.getFullYear(),d.getMonth(),d.getDate())}
+  function mondayOf(d){var x=startOfDay(d);x.setDate(x.getDate()-((x.getDay()+6)%7));return x}
+  function same(a,b){return Object.keys(a).sort().join()===Object.keys(b).sort().join()}
+  var today=startOfDay(new Date());
+  var thisMonday=mondayOf(today);
+  var offset=0;
+  var daysEl=document.getElementById("days");
+  var saveBtn=document.getElementById("save");
+  var msg=document.getElementById("msg");
+  function setMsg(t,ok){msg.textContent=t;msg.className=ok?"ok":""}
+
+  /* ---------- Sonidos ---------- */
+  var actx=null;
+  function ac(){
+    var AC=window.AudioContext||window.webkitAudioContext;if(!AC)return null;
+    if(!actx)actx=new AC();
+    if(actx.state==="suspended")actx.resume();
+    return actx;
+  }
+  /* Un solo sonido para todo (marcar, guardar y abrir la app): bombo + caja + platillo */
+  function drums(){
+    try{
+      if(!ac())return;
+      var t=actx.currentTime;
+      var k=actx.createOscillator(),kg=actx.createGain();
+      k.type="sine";k.frequency.setValueAtTime(170,t);k.frequency.exponentialRampToValueAtTime(45,t+0.18);
+      kg.gain.setValueAtTime(0.9,t);kg.gain.exponentialRampToValueAtTime(0.0001,t+0.22);
+      k.connect(kg);kg.connect(actx.destination);k.start(t);k.stop(t+0.25);
+      var len=Math.floor(actx.sampleRate*0.9),buf=actx.createBuffer(1,len,actx.sampleRate),d=buf.getChannelData(0);
+      for(var i=0;i<len;i++)d[i]=Math.random()*2-1;
+      var n=actx.createBufferSource();n.buffer=buf;
+      var hp=actx.createBiquadFilter();hp.type="highpass";hp.frequency.value=2500;
+      var ng=actx.createGain();
+      ng.gain.setValueAtTime(0.0001,t+0.12);
+      ng.gain.exponentialRampToValueAtTime(0.5,t+0.13);
+      ng.gain.exponentialRampToValueAtTime(0.0001,t+0.85);
+      n.connect(hp);hp.connect(ng);ng.connect(actx.destination);n.start(t+0.12);n.stop(t+0.95);
+    }catch(e){}
+  }
+
+  /* ---------- Pantalla de entrada ---------- */
+  var splash=document.getElementById("splash");
+  splash.onclick=function(){
+    drums();
+    splash.classList.add("out");
+    setTimeout(function(){splash.style.display="none"},400);
+  };
+
+  /* ---------- Semana ---------- */
+  function render(){
+    var mon=new Date(thisMonday);mon.setDate(mon.getDate()+offset*7);
+    var sun=new Date(mon);sun.setDate(sun.getDate()+6);
+    var r=mon.getDate()+(mon.getMonth()!==sun.getMonth()?" "+MONTHS[mon.getMonth()]:"")+" – "+sun.getDate()+" "+MONTHS[sun.getMonth()];
+    document.getElementById("range").textContent=offset===0?"Esta semana ("+r+")":r;
+    document.getElementById("next").disabled=offset>=0;
+    var html="",done=0;
+    for(var i=0;i<7;i++){
+      var d=new Date(mon);d.setDate(d.getDate()+i);
+      var k=key(d),isDone=!!draft[k],future=d>today,isToday=d.getTime()===today.getTime();
+      if(isDone)done++;
+      var status=isDone?"Tomada":(future?"Aún no":(isToday?"Pendiente":"<span class='miss'>Sin marcar</span>"));
+      html+="<button class='day"+(isDone?" done":"")+(isToday?" today":"")+"' data-k='"+k+"'"+(future?" disabled":"")+">"+
+        "<div class='dn'><strong>"+DAYS[i]+(isToday?" · Hoy":"")+"</strong><span>"+d.getDate()+" de "+MONTHS[d.getMonth()]+" · "+status+"</span></div>"+
+        "<div class='chk'>✓</div></button>";
+    }
+    daysEl.innerHTML=html;
+    document.getElementById("count").textContent=done+" de 7 días tomada";
+    document.getElementById("fill").style.width=(done/7*100)+"%";
+    saveBtn.disabled=same(draft,saved);
+  }
+  daysEl.addEventListener("click",function(e){
+    var b=e.target.closest(".day");if(!b||b.disabled)return;
+    var k=b.getAttribute("data-k");
+    if(draft[k])delete draft[k];else{draft[k]=1;drums();}
+    setMsg(same(draft,saved)?"":"Tienes cambios sin guardar",false);
+    render();
+  });
+  saveBtn.onclick=function(){
+    try{
+      localStorage.setItem(KEY,JSON.stringify(draft));
+      saved=JSON.parse(JSON.stringify(draft));
+      setMsg("¡Guardado! ✓",true);
+      drums();
+    }catch(e){
+      setMsg("No se ha podido guardar en este navegador",false);
+    }
+    render();
+  };
+  document.getElementById("prev").onclick=function(){offset--;render()};
+  document.getElementById("next").onclick=function(){if(offset<0){offset++;render()}};
+  render();
+})();
+</script>
+</body>
+</html>
